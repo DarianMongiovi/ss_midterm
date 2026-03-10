@@ -1,47 +1,51 @@
 import requests
+import random
 
 def get_api_key():
     try:
-        # 'r' means read mode
         with open('api_key.txt', 'r') as file:
             return file.read().strip()
     except FileNotFoundError:
         print("Error: api_key.txt not found!")
         return None
 
-def get_headline_words():
+def get_random_headline_words():
     api_key = get_api_key()
-    if not api_key:
-        return []
+    if not api_key: return []
 
+    # List of categories to pick from randomly
+    categories = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology']
+    chosen_category = random.choice(categories)
+    
     url = 'https://newsapi.org/v2/top-headlines'
     params = {
         'language': 'en',
         'apiKey': api_key,
-        'pageSize': 3 
+        'category': chosen_category, # Randomize the topic
+        'pageSize': 20               # Pull 20 options so we can shuffle them
     }
 
     try:
         response = requests.get(url, params=params)
         data = response.json()
 
-        if data['status'] == 'ok':
+        if data['status'] == 'ok' and data['articles']:
+            # Pick 3 random articles from the 20 we fetched
+            sample_articles = random.sample(data['articles'], k=min(3, len(data['articles'])))
+            
             all_words = []
-            for article in data['articles']:
-                # Using .split() to turn the headline string into a list of words
+            for article in sample_articles:
                 words = article['title'].split()
-                # Clean up punctuation and lowercase everything
                 clean_words = [w.strip(".,!?:;\"()").lower() for w in words]
                 all_words.extend(clean_words)
+            
+            print(f"--- Topic chosen: {chosen_category} ---")
             return all_words
-        else:
-            print("API Error:", data.get('message'))
-            return []
+        return []
     except Exception as e:
-        print("Connection Error:", e)
+        print("Error:", e)
         return []
 
 if __name__ == "__main__":
-    word_list = get_headline_words()
-    print(f"Total words found: {len(word_list)}")
+    word_list = get_random_headline_words()
     print(word_list)
