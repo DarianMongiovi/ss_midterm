@@ -46,6 +46,4 @@ def get_random_headline_words():
         print("Error:", e)
         return []
 
-if __name__ == "__main__":
-    word_list = get_random_headline_words()
-    print(word_list)
+word_list = get_random_headline_words()
