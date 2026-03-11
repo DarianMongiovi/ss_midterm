@@ -1,5 +1,6 @@
 import requests
 import random
+import re
 
 def get_api_key():
     try:
@@ -28,16 +29,26 @@ def get_random_headline_words():
         response = requests.get(url, params=params)
         data = response.json()
 
-        if data['status'] == 'ok' and data['articles']:
-            sample_articles = random.sample(data['articles'], k=min(3, len(data['articles'])))
+        if data.get('status') == 'ok' and data.get('articles'):
+            sample_articles = random.sample(data['articles'], k=min(5, len(data['articles'])))
             
             all_words = []
             for article in sample_articles:
-                words = article['title'].split()
-                clean_words = [w.strip(".,!?:;\"()").lower() for w in words]
-                all_words.extend(clean_words)
+                title = article.get('title', '')
+                
+                title = title.replace('-', ' ').replace('—', ' ')
+                
+                words = title.split()
+                for w in words:
+                    clean = w.strip(".,!?:;\"()[]{}*|#/@").lower()
+                    
+                    if clean.isalpha() and (len(clean) > 1 or clean in ['a', 'i']):
+                        if w.isupper() and len(w) > 1:
+                            continue
+                            
+                        all_words.append(clean)
             
-            print(f"--- Topic chosen: {chosen_category} ---")
+            print(f"--- Topic: {chosen_category} | Words collected: {len(all_words)} ---")
             return all_words
         return []
     except Exception as e:
@@ -45,5 +56,4 @@ def get_random_headline_words():
         return []
 
 def word_list():
-    new_list = get_random_headline_words()
-    return new_list
+    return get_random_headline_words()
