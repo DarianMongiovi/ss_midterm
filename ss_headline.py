@@ -13,7 +13,6 @@ def get_random_headline_words():
     api_key = get_api_key()
     if not api_key: return []
 
-    # List of categories to pick from randomly
     categories = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology']
     chosen_category = random.choice(categories)
     
@@ -21,8 +20,8 @@ def get_random_headline_words():
     params = {
         'language': 'en',
         'apiKey': api_key,
-        'category': chosen_category, # Randomize the topic
-        'pageSize': 20               # Pull 20 options so we can shuffle them
+        'category': chosen_category,
+        'pageSize': 20
     }
 
     try:
@@ -30,7 +29,6 @@ def get_random_headline_words():
         data = response.json()
 
         if data['status'] == 'ok' and data['articles']:
-            # Pick 3 random articles from the 20 we fetched
             sample_articles = random.sample(data['articles'], k=min(3, len(data['articles'])))
             
             all_words = []
@@ -48,4 +46,4 @@ def get_random_headline_words():
 
 def word_list():
     new_list = get_random_headline_words()
-
+    return new_list
