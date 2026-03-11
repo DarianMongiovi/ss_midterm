@@ -46,4 +46,6 @@ def get_random_headline_words():
         print("Error:", e)
         return []
 
-word_list = get_random_headline_words()
+def word_list():
+    new_list = get_random_headline_words()
+
