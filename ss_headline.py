@@ -48,7 +48,6 @@ def get_random_headline_words():
                             
                         all_words.append(clean)
             
-            print(f"--- Topic: {chosen_category} | Words collected: {len(all_words)} ---")
             return all_words
         return []
     except Exception as e:
